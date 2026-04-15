@@ -1,0 +1,61 @@
+{
+  "name": "SubDownload",
+  "description": "Fetch YouTube transcripts, search videos, browse channels and playlists — instant YouTube data for your AI workflow.",
+  "version": "1.0.0",
+  "mcp_server": {
+    "url": "https://api.subdownload.com/mcp",
+    "transport": "streamable-http",
+    "auth": {
+      "oauth": {
+        "discovery_url": "https://api.subdownload.com/.well-known/oauth-authorization-server"
+      },
+      "bearer": {
+        "header": "Authorization"
+      }
+    }
+  },
+  "tools": [
+    {
+      "name": "fetch_transcript",
+      "description": "Fetch YouTube video transcript/captions in any language",
+      "credits": 1
+    },
+    {
+      "name": "search_youtube",
+      "description": "Search YouTube for videos or channels",
+      "credits": 1
+    },
+    {
+      "name": "resolve_channel",
+      "description": "Resolve @handle, URL, or video link to channel info",
+      "credits": 0
+    },
+    {
+      "name": "search_channel_videos",
+      "description": "Search videos within a specific channel",
+      "credits": 1
+    },
+    {
+      "name": "get_channel_latest_videos",
+      "description": "Get latest videos from a channel",
+      "credits": 0
+    },
+    {
+      "name": "list_channel_videos",
+      "description": "List channel videos with pagination",
+      "credits": 1
+    },
+    {
+      "name": "list_playlist_videos",
+      "description": "List playlist videos with pagination",
+      "credits": 1
+    }
+  ],
+  "links": {
+    "website": "https://subdownload.com",
+    "account": "https://subdownload.com/account",
+    "docs": "https://api.subdownload.com/docs",
+    "llms_txt": "https://api.subdownload.com/docs/llms-full.txt",
+    "skills_manifest": "https://api.subdownload.com/skills"
+  }
+}
