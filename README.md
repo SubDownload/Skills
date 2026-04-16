@@ -1,74 +1,101 @@
-# SubDownload MCP Skills
+# SubDownload Skill for Claude
 
-Fetch YouTube transcripts, search videos, browse channels and playlists — instant YouTube data for your AI workflow.
+> Fetch YouTube transcripts, search videos, browse channels and playlists — instant YouTube data inside Claude.
 
-## MCP Server
+Anthropic [Agent Skill](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview) that teaches Claude when and how to use the [SubDownload MCP](https://api.subdownload.com/mcp) server.
 
-- **URL**: `https://api.subdownload.com/mcp`
-- **Transport**: Streamable HTTP (stateless)
-- **Auth**: OAuth 2.1 or Bearer Token
+---
 
-## Skills
+## ⚡ Install in 30 seconds
 
-### SubDownload
+### Claude Code / Cursor / Windsurf
 
-7 tools for accessing YouTube data:
+```bash
+# Drop the skill into your local Claude skills folder, then restart Claude Code.
+mkdir -p ~/.claude/skills && \
+  curl -L https://github.com/SubDownload/Skills/archive/refs/heads/main.tar.gz | \
+  tar -xz -C ~/.claude/skills --strip-components=1 Skills-main/subdownload
+```
 
-| Tool | Description | Credits |
-|------|-------------|---------|
-| `fetch_transcript` | Fetch video transcript/captions in any language | 1 |
-| `search_youtube` | Search YouTube for videos or channels | 1 |
-| `resolve_channel` | Resolve @handle, URL, or video link to channel info | Free |
-| `search_channel_videos` | Search videos within a specific channel | 1 |
-| `get_channel_latest_videos` | Get latest videos from a channel | Free |
-| `list_channel_videos` | List channel videos with pagination | 1/page |
-| `list_playlist_videos` | List playlist videos with pagination | 1/page |
+Or manually:
 
-## Setup
+```bash
+git clone https://github.com/SubDownload/Skills.git
+cp -r Skills/subdownload ~/.claude/skills/
+```
 
-### Claude Desktop / Claude.ai (OAuth)
+### Claude.ai (web) / Claude Desktop
 
-1. Add MCP server URL: `https://api.subdownload.com/mcp`
-2. Authorize via OAuth when prompted
-3. Done
+1. Download: **[subdownload-skill.zip](https://github.com/SubDownload/Skills/archive/refs/heads/main.zip)** (or run `zip -r subdownload.zip subdownload/` on this repo)
+2. Claude.ai → **Settings → Capabilities → Skills → + Create skill** → upload the zip
+3. New chat — the skill activates whenever you mention YouTube
 
-### Claude Code / Cursor (API Key)
+---
 
-Add to `.mcp.json`:
+## 🔌 Add the MCP server (one-time, required)
+
+The skill calls tools from our hosted MCP. Pick your client:
+
+| Client | How |
+|---|---|
+| **Claude.ai / Claude Desktop** | Settings → Connectors → **Add custom connector** → paste `https://api.subdownload.com/mcp` → sign in with Google |
+| **Claude Code / Cursor** | Add to `.mcp.json` — see below |
+| **Gemini CLI** | `gemini extensions install https://github.com/SubDownload/Skills` (coming soon) or add `mcpServers` entry manually |
+| **ChatGPT (Developer Mode)** | Settings → Developer Mode → Add MCP server → `https://api.subdownload.com/mcp` |
+
+### `.mcp.json` (Bearer token)
 
 ```json
 {
   "mcpServers": {
     "subdownload": {
       "url": "https://api.subdownload.com/mcp",
-      "headers": {
-        "Authorization": "Bearer YOUR_API_KEY"
-      }
+      "headers": { "Authorization": "Bearer sk_live_xxx" }
     }
   }
 }
 ```
 
-Get your API key at [subdownload.com/account](https://subdownload.com/account).
+Get a key at **[subdownload.com/account](https://subdownload.com/account)** — 150 free credits, no card required.
 
-## Example Prompts
+---
 
-- "Get the transcript of YouTube video dQw4w9WgXcQ"
-- "Search YouTube for machine learning tutorials"
-- "Show me the latest videos from @MrBeast"
-- "Find all videos about 'iPhone review' from @mkbhd"
-- "What channel uploaded this video? https://youtu.be/dQw4w9WgXcQ"
+## 🎯 What you can ask
 
-## Pricing
+- "Summarize this video: https://youtu.be/dQw4w9WgXcQ"
+- "What are @mkbhd's latest iPhone review videos?"
+- "Search YouTube for Rust async tutorials, top 10"
+- "Translate this transcript to Chinese: <url>"
+- "List all videos from the @veritasium channel"
 
-- Free tier: 150 credits (sign in with Google, no credit card)
-- Pro: 10,000 credits
-- 2 free endpoints (channel resolve & latest videos)
-- Only successful requests consume credits — errors are never charged
+## 🛠 Tools in this skill
 
-## Links
+| Tool | Purpose | Cost |
+|---|---|---|
+| `fetch_transcript` | Transcript / captions in any language | 1 credit |
+| `search_youtube` | Global search (videos, channels, playlists) | 1 credit |
+| `resolve_channel` | `@handle` / URL → channel info | Free |
+| `get_channel_latest_videos` | Newest uploads from a channel | Free |
+| `list_channel_videos` | Paginated channel video list | 1 / page |
+| `search_channel_videos` | Search within one channel | 1 credit |
+| `list_playlist_videos` | Paginated playlist contents | 1 / page |
 
-- Website: [subdownload.com](https://subdownload.com)
-- API Docs: [api.subdownload.com/docs](https://api.subdownload.com/docs)
-- LLM Docs: [api.subdownload.com/docs/llms-full.txt](https://api.subdownload.com/docs/llms-full.txt)
-- Skills Manifest: [api.subdownload.com/skills](https://api.subdownload.com/skills)
+Errors never consume credits — only HTTP 200 is charged.
+
+---
+
+## 💰 Pricing
+
+- **Free**: 150 credits (Google sign-in, no card)
+- **Pro**: 10,000 credits
+- 2 endpoints always free (`resolve_channel`, `get_channel_latest_videos`)
+- 200 req/min per key
+
+## 🔗 Links
+
+- Website — [subdownload.com](https://subdownload.com)
+- Dashboard & API keys — [subdownload.com/account](https://subdownload.com/account)
+- API docs — [api.subdownload.com/docs](https://api.subdownload.com/docs)
+- OpenAPI spec — [api.subdownload.com/openapi.yaml](https://api.subdownload.com/openapi.yaml)
+- LLM-friendly docs — [api.subdownload.com/docs/llms-full.txt](https://api.subdownload.com/docs/llms-full.txt)
+- MCP server — [api.subdownload.com/mcp](https://api.subdownload.com/mcp)
