@@ -6,27 +6,26 @@ Anthropic [Agent Skill](https://platform.claude.com/docs/en/agents-and-tools/age
 
 ---
 
-## ⚡ Install in 30 seconds
+## ⚡ Install in one command
 
 ### Claude Code / Cursor / Windsurf
 
 ```bash
-# Drop the skill into your local Claude skills folder, then restart Claude Code.
-mkdir -p ~/.claude/skills && \
-  curl -L https://github.com/SubDownload/Skills/archive/refs/heads/main.tar.gz | \
-  tar -xz -C ~/.claude/skills --strip-components=1 Skills-main/subdownload
+npx subdownload-skill
 ```
 
-Or manually:
+That's it. Restart Claude Code and ask about any YouTube video.
+
+Install scope:
 
 ```bash
-git clone https://github.com/SubDownload/Skills.git
-cp -r Skills/subdownload ~/.claude/skills/
+npx subdownload-skill            # user-wide   (~/.claude/skills/subdownload)
+npx subdownload-skill --project  # this project (./.claude/skills/subdownload)
 ```
 
 ### Claude.ai (web) / Claude Desktop
 
-1. Download: **[subdownload-skill.zip](https://github.com/SubDownload/Skills/archive/refs/heads/main.zip)** (or run `zip -r subdownload.zip subdownload/` on this repo)
+1. Download: **[subdownload-skill.zip](https://github.com/SubDownload/Skills/archive/refs/heads/main.zip)**
 2. Claude.ai → **Settings → Capabilities → Skills → + Create skill** → upload the zip
 3. New chat — the skill activates whenever you mention YouTube
 
