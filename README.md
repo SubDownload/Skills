@@ -11,7 +11,7 @@ Anthropic [Agent Skill](https://platform.claude.com/docs/en/agents-and-tools/age
 ### Claude Code / Cursor / Windsurf
 
 ```bash
-npx subdownload-skill
+npx @subdown/skill
 ```
 
 That's it. Restart Claude Code and ask about any YouTube video.
@@ -19,8 +19,8 @@ That's it. Restart Claude Code and ask about any YouTube video.
 Install scope:
 
 ```bash
-npx subdownload-skill            # user-wide   (~/.claude/skills/subdownload)
-npx subdownload-skill --project  # this project (./.claude/skills/subdownload)
+npx @subdown/skill            # user-wide   (~/.claude/skills/subdownload)
+npx @subdown/skill --project  # this project (./.claude/skills/subdownload)
 ```
 
 ### Claude.ai (web) / Claude Desktop

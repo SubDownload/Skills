@@ -3,8 +3,8 @@
  * One-command installer for the SubDownload Claude Skill.
  *
  * Usage:
- *   npx subdownload-skill            # install to ~/.claude/skills/subdownload
- *   npx subdownload-skill --project  # install to ./.claude/skills/subdownload
+ *   npx @subdown/skill            # install to ~/.claude/skills/subdownload
+ *   npx @subdown/skill --project  # install to ./.claude/skills/subdownload
  */
 
 const fs = require('fs');
