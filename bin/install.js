@@ -69,6 +69,6 @@ Next steps — add the MCP server:
 
   Get an API key at https://subdownload.com/account (1,000 free credits).
 
-Or run:  npx @subdown/skill login
+Or run:  npx @subdown/skill@latest login
 `);
 }

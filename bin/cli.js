@@ -3,10 +3,10 @@
  * SubDownload CLI
  *
  * Usage:
- *   npx @subdown/skill              # install skill + login + configure MCP
- *   npx @subdown/skill login        # login only (re-auth / switch account)
- *   npx @subdown/skill --skip-auth  # install skill without login
- *   npx @subdown/skill --project    # install to project instead of global
+ *   npx @subdown/skill@latest              # install skill + login + configure MCP
+ *   npx @subdown/skill@latest login        # login only (re-auth / switch account)
+ *   npx @subdown/skill@latest --skip-auth  # install skill without login
+ *   npx @subdown/skill@latest --project    # install to project instead of global
  */
 
 const cmd = process.argv[2];
@@ -16,7 +16,7 @@ if (cmd === 'login') {
   require('./login')();
 } else if (cmd === '--help' || cmd === '-h') {
   console.log(`
-Usage: npx @subdown/skill [command] [options]
+Usage: npx @subdown/skill@latest [command] [options]
 
 Commands:
   (default)   Install skill + sign in + configure MCP

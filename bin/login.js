@@ -146,7 +146,7 @@ function startAuth(targets) {
 
     setTimeout(() => {
       if (!settled) {
-        console.log('\n\u26A0  Login timed out (3 min). Run again: npx @subdown/skill login\n');
+        console.log('\n\u26A0  Login timed out (3 min). Run again: npx @subdown/skill@latest login\n');
         server.close();
         process.exit(0);
       }
@@ -155,7 +155,7 @@ function startAuth(targets) {
 
   server.on('error', (err) => {
     console.error(`\n\u2717 Could not start local server: ${err.message}`);
-    console.log('  Run again: npx @subdown/skill login\n');
+    console.log('  Run again: npx @subdown/skill@latest login\n');
     process.exit(1);
   });
 }

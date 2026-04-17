@@ -1,6 +1,6 @@
 {
   "name": "@subdown/skill",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Claude Agent Skill for YouTube transcripts, search, and channel browsing via the SubDownload MCP server.",
   "bin": {
     "subdown-skill": "bin/cli.js",
