@@ -40,7 +40,7 @@ Next steps:
          https://api.subdownload.com/mcp \\
          --header "Authorization: Bearer sk_live_xxx"
 
-     Get an API key at https://subdownload.com/account (150 free credits).
+     Get an API key at https://subdownload.com/account (1,000 free credits).
 
      Or — in Claude.ai / Claude Desktop — add a Custom Connector pointing
      to https://api.subdownload.com/mcp and sign in with Google.

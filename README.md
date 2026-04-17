@@ -8,15 +8,24 @@ Anthropic [Agent Skill](https://platform.claude.com/docs/en/agents-and-tools/age
 
 ## ⚡ Install in one command
 
-### Claude Code / Cursor / Windsurf
+### Skills CLI (recommended)
+
+```bash
+npx skills add SubDownload/Skills
+```
+
+Supports Claude Code, Cursor, Codex, Gemini CLI, GitHub Copilot, and [40+ agents](https://skills.sh/).
+
+```bash
+npx skills add SubDownload/Skills -g   # global (user-wide)
+npx skills add SubDownload/Skills      # project-level
+```
+
+### npx (Claude Code / Cursor / Windsurf)
 
 ```bash
 npx @subdown/skill
 ```
-
-That's it. Restart Claude Code and ask about any YouTube video.
-
-Install scope:
 
 ```bash
 npx @subdown/skill            # user-wide   (~/.claude/skills/subdownload)
@@ -55,7 +64,7 @@ The skill calls tools from our hosted MCP. Pick your client:
 }
 ```
 
-Get a key at **[subdownload.com/account](https://subdownload.com/account)** — 150 free credits, no card required.
+Get a key at **[subdownload.com/account](https://subdownload.com/account)** — 1,000 free credits, no card required.
 
 ---
 
@@ -85,7 +94,7 @@ Errors never consume credits — only HTTP 200 is charged.
 
 ## 💰 Pricing
 
-- **Free**: 150 credits (Google sign-in, no card)
+- **Free**: 1,000 credits (Google sign-in, no card)
 - **Pro**: 10,000 credits
 - 2 endpoints always free (`resolve_channel`, `get_channel_latest_videos`)
 - 200 req/min per key
