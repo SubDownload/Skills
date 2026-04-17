@@ -24,12 +24,13 @@ npx skills add SubDownload/Skills      # project-level
 ### npx (Claude Code / Cursor / Windsurf)
 
 ```bash
-npx @subdown/skill
+npx @subdown/skill            # install skill + sign in + configure MCP (one-shot)
 ```
 
 ```bash
-npx @subdown/skill            # user-wide   (~/.claude/skills/subdownload)
-npx @subdown/skill --project  # this project (./.claude/skills/subdownload)
+npx @subdown/skill --project  # install to current project instead of global
+npx @subdown/skill login      # re-auth or switch account
+npx @subdown/skill --skip-auth  # install skill only, configure later
 ```
 
 ### Claude.ai (web) / Claude Desktop
@@ -41,6 +42,8 @@ npx @subdown/skill --project  # this project (./.claude/skills/subdownload)
 ---
 
 ## 🔌 Add the MCP server (one-time, required)
+
+> **If you used `npx @subdown/skill`, the MCP server is already configured — skip this section.**
 
 The skill calls tools from our hosted MCP. Pick your client:
 
