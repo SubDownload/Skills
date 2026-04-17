@@ -1,8 +1,8 @@
-# SubDownload Skill for Claude
+# SubDownload Skill
 
-> Fetch YouTube transcripts, search videos, browse channels and playlists — instant YouTube data inside Claude.
+> Fetch YouTube transcripts, search videos, browse channels and playlists — instant YouTube data inside any AI agent.
 
-Anthropic [Agent Skill](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview) that teaches Claude when and how to use the [SubDownload MCP](https://api.subdownload.com/mcp) server.
+[Agent Skill](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview) that teaches AI agents when and how to use the [SubDownload MCP](https://api.subdownload.com/mcp) server. Works with Claude Code, Cursor, Codex, Gemini CLI, GitHub Copilot, and [40+ agents](https://skills.sh/).
 
 ---
 
