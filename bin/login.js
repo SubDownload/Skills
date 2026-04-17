@@ -34,6 +34,11 @@ const CLIENTS = [
     detect: () => fs.existsSync(path.join(home, '.codeium', 'windsurf')),
   },
   {
+    name: 'Codex',
+    configPath: () => path.join(home, '.codex', 'mcp.json'),
+    detect: () => fs.existsSync(path.join(home, '.codex')),
+  },
+  {
     name: 'Gemini CLI',
     configPath: () => path.join(home, '.gemini', 'settings.json'),
     detect: () => {
