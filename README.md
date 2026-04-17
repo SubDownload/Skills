@@ -64,7 +64,7 @@ The skill calls tools from our hosted MCP. Pick your client:
 }
 ```
 
-Get a key at **[subdownload.com/account](https://subdownload.com/account)** — 1,000 free credits, no card required.
+Get a key at **[subdownload.com/account](https://subdownload.com/account?utm_source=gthb_skills_xa2ykb&utm_medium=code&utm_campaign=Skills)** — 1,000 free credits, no card required.
 
 ---
 
@@ -101,9 +101,9 @@ Errors never consume credits — only HTTP 200 is charged.
 
 ## 🔗 Links
 
-- Website — [subdownload.com](https://subdownload.com)
-- Dashboard & API keys — [subdownload.com/account](https://subdownload.com/account)
-- API docs — [api.subdownload.com/docs](https://api.subdownload.com/docs)
+- Website — [subdownload.com](https://subdownload.com?utm_source=gthb_skills_xa2ykb&utm_medium=code&utm_campaign=Skills)
+- Dashboard & API keys — [subdownload.com/account](https://subdownload.com/account?utm_source=gthb_skills_xa2ykb&utm_medium=code&utm_campaign=Skills)
+- API docs — [api.subdownload.com/docs](https://api.subdownload.com/docs?utm_source=gthb_skills_xa2ykb&utm_medium=code&utm_campaign=Skills)
 - OpenAPI spec — [api.subdownload.com/openapi.yaml](https://api.subdownload.com/openapi.yaml)
-- LLM-friendly docs — [api.subdownload.com/docs/llms-full.txt](https://api.subdownload.com/docs/llms-full.txt)
+- LLM-friendly docs — [api.subdownload.com/docs/llms-full.txt](https://api.subdownload.com/docs/llms-full.txt?utm_source=gthb_skills_xa2ykb&utm_medium=code&utm_campaign=Skills)
 - MCP server — [api.subdownload.com/mcp](https://api.subdownload.com/mcp)

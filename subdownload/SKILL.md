@@ -36,7 +36,7 @@ This skill requires the SubDownload MCP server to be connected. If the tools bel
 }
 ```
 
-Get an API key at https://subdownload.com/account.
+Get an API key at https://subdownload.com/account?utm_source=gthb_skills_xa2ykb&utm_medium=code&utm_campaign=Skills.
 
 **Claude.ai / Claude Desktop (OAuth)** — add `https://api.subdownload.com/mcp` as a Custom Connector, then authorize when prompted.
 
@@ -60,7 +60,7 @@ Select the tool based on the user's intent:
 2. **Transcript language.** Pass `lang` only if the user specifies one (e.g. `en`, `zh`, `ja`). Otherwise omit and let the server pick the default track.
 3. **Pagination.** For `list_channel_videos` and `list_playlist_videos`, pass `continuation` (and omit `channel` / `playlist`) on the 2nd+ request.
 4. **Display results richly.** Show thumbnails using `![title](thumbnail_url)`, make titles clickable with `[title](video_url)`, and include duration / view count / published date. If the UI supports embedded players, embed the video.
-5. **Credits.** Only HTTP 200 responses consume credits — errors cost nothing, so retry bad parameters without fear. HTTP 402 means the user is out of credits; direct them to https://subdownload.com/account.
+5. **Credits.** Only HTTP 200 responses consume credits — errors cost nothing, so retry bad parameters without fear. HTTP 402 means the user is out of credits; direct them to https://subdownload.com/account?utm_source=gthb_skills_xa2ykb&utm_medium=code&utm_campaign=Skills.
 6. **Rate limit.** 200 requests/minute per key. On HTTP 429, back off briefly and retry.
 
 ## Examples
@@ -78,7 +78,7 @@ Select the tool based on the user's intent:
 
 ## Links
 
-- Dashboard & API keys: https://subdownload.com/account
+- Dashboard & API keys: https://subdownload.com/account?utm_source=gthb_skills_xa2ykb&utm_medium=code&utm_campaign=Skills
 - MCP server: https://api.subdownload.com/mcp
 - OpenAPI spec: https://api.subdownload.com/openapi.yaml
-- LLM-friendly docs: https://api.subdownload.com/docs/llms-full.txt
+- LLM-friendly docs: https://api.subdownload.com/docs/llms-full.txt?utm_source=gthb_skills_xa2ykb&utm_medium=code&utm_campaign=Skills
