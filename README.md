@@ -1,112 +1,66 @@
-# SubDownload Skill
+# SubDownload
 
-> Fetch YouTube transcripts, search videos, browse channels and playlists — instant YouTube data inside any AI agent.
+YouTube data for AI agents — transcripts, search, channels, playlists.
 
-[Agent Skill](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview) that teaches AI agents when and how to use the [SubDownload MCP](https://api.subdownload.com/mcp) server. Works with Claude Code, Cursor, Codex, Gemini CLI, GitHub Copilot, and [40+ agents](https://skills.sh/).
-
----
-
-## ⚡ Install in one command
-
-### Skills CLI (recommended)
+## Install
 
 ```bash
-npx skills add SubDownload/Skills
+npx @subdown/skill@latest
 ```
 
-Supports Claude Code, Cursor, Codex, Gemini CLI, GitHub Copilot, and [40+ agents](https://skills.sh/).
+One command. Detects every agent on your machine (Claude Code, Cursor, Codex, Windsurf, Gemini CLI, OpenCode, Warp, Cline, Continue, and 35+ more), installs the skill into each, signs you in, configures MCP. Done.
 
-```bash
-npx skills add SubDownload/Skills -g   # global (user-wide)
-npx skills add SubDownload/Skills      # project-level
+## Try it
+
+Open any detected agent and ask:
+
+```
+Summarize this video: https://youtu.be/dQw4w9WgXcQ
 ```
 
-### npx (Claude Code / Cursor / Windsurf / Codex / Gemini CLI)
-
-```bash
-npx @subdown/skill@latest            # install skill + sign in + configure MCP (one-shot)
+```
+Search YouTube for Rust async tutorials
 ```
 
-```bash
-npx @subdown/skill@latest --project  # install to current project instead of global
-npx @subdown/skill@latest login      # re-auth or switch account
-npx @subdown/skill@latest --skip-auth  # install skill only, configure later
+```
+What are @mkbhd's latest videos?
 ```
 
-### Claude.ai (web) / Claude Desktop
+If the agent fetches real YouTube data, you're all set.
 
-1. Download: **[subdownload-skill.zip](https://github.com/SubDownload/Skills/archive/refs/heads/main.zip)**
-2. Claude.ai → **Settings → Capabilities → Skills → + Create skill** → upload the zip
-3. New chat — the skill activates whenever you mention YouTube
+## Supported agents (45)
 
----
+Adal · Amp · Antigravity · Augment · Bob · Claude Code · Cline · CodeBuddy · Codex · Command Code · Continue · Cortex · Crush · Cursor · DeepAgents · Droid · Firebender · Gemini CLI · GitHub Copilot · Goose · iFlow CLI · Junie · Kilo Code · Kimi CLI · Kiro CLI · Kode · MCPJam · Mistral Vibe · Mux · Neovate · OpenClaw · OpenCode · OpenHands · Pi · Pochi · Qoder · Qwen Code · Replit · Roo Code · Trae · Trae CN · Warp · Windsurf · Zencoder · Universal (`.agents/skills`).
 
-## 🔌 Add the MCP server (one-time, required)
+Run `npx @subdown/skill@latest list` to see which are detected on your machine. Target a specific one with `--client cursor` (repeatable) or install everywhere with `--all-clients`.
 
-> **If you used `npx @subdown/skill@latest`, the MCP server is already configured — skip this section.**
+## Other install methods
 
-The skill calls tools from our hosted MCP. Pick your client:
+<details>
+<summary>Claude.ai / Claude Desktop</summary>
 
-| Client | How |
-|---|---|
-| **Claude.ai / Claude Desktop** | Settings → Connectors → **Add custom connector** → paste `https://api.subdownload.com/mcp` → sign in with Google |
-| **Claude Code / Cursor** | Add to `.mcp.json` — see below |
-| **Gemini CLI** | `gemini extensions install https://github.com/SubDownload/Skills` (coming soon) or add `mcpServers` entry manually |
-| **ChatGPT (Developer Mode)** | Settings → Developer Mode → Add MCP server → `https://api.subdownload.com/mcp` |
+Settings → Connectors → **Add custom connector** → paste `https://api.subdownload.com/mcp` → sign in with Google
 
-### `.mcp.json` (Bearer token)
+</details>
+
+<details>
+<summary>Manual .mcp.json</summary>
 
 ```json
 {
   "mcpServers": {
     "subdownload": {
       "url": "https://api.subdownload.com/mcp",
-      "headers": { "Authorization": "Bearer sk_live_xxx" }
+      "headers": { "Authorization": "Bearer YOUR_API_KEY" }
     }
   }
 }
 ```
 
-Get a key at **[subdownload.com/account](https://subdownload.com/account?utm_source=gthb_skills_xa2ykb&utm_medium=code&utm_campaign=Skills)** — 1,000 free credits, no card required.
+Get a key at [subdownload.com/account](https://subdownload.com/account) — 1,000 free credits, no card.
 
----
+</details>
 
-## 🎯 What you can ask
+## Links
 
-- "Summarize this video: https://youtu.be/dQw4w9WgXcQ"
-- "What are @mkbhd's latest iPhone review videos?"
-- "Search YouTube for Rust async tutorials, top 10"
-- "Translate this transcript to Chinese: <url>"
-- "List all videos from the @veritasium channel"
-
-## 🛠 Tools in this skill
-
-| Tool | Purpose | Cost |
-|---|---|---|
-| `fetch_transcript` | Transcript / captions in any language | 1 credit |
-| `search_youtube` | Global search (videos, channels, playlists) | 1 credit |
-| `resolve_channel` | `@handle` / URL → channel info | Free |
-| `get_channel_latest_videos` | Newest uploads from a channel | Free |
-| `list_channel_videos` | Paginated channel video list | 1 / page |
-| `search_channel_videos` | Search within one channel | 1 credit |
-| `list_playlist_videos` | Paginated playlist contents | 1 / page |
-
-Errors never consume credits — only HTTP 200 is charged.
-
----
-
-## 💰 Pricing
-
-- **Free**: 1,000 credits (Google sign-in, no card)
-- **Pro**: 10,000 credits
-- 2 endpoints always free (`resolve_channel`, `get_channel_latest_videos`)
-- 200 req/min per key
-
-## 🔗 Links
-
-- Website — [subdownload.com](https://subdownload.com?utm_source=gthb_skills_xa2ykb&utm_medium=code&utm_campaign=Skills)
-- Dashboard & API keys — [subdownload.com/account](https://subdownload.com/account?utm_source=gthb_skills_xa2ykb&utm_medium=code&utm_campaign=Skills)
-- API docs — [api.subdownload.com/docs](https://api.subdownload.com/docs?utm_source=gthb_skills_xa2ykb&utm_medium=code&utm_campaign=Skills)
-- OpenAPI spec — [api.subdownload.com/openapi.yaml](https://api.subdownload.com/openapi.yaml)
-- LLM-friendly docs — [api.subdownload.com/docs/llms-full.txt](https://api.subdownload.com/docs/llms-full.txt?utm_source=gthb_skills_xa2ykb&utm_medium=code&utm_campaign=Skills)
-- MCP server — [api.subdownload.com/mcp](https://api.subdownload.com/mcp)
+[Website](https://subdownload.com) · [Dashboard](https://subdownload.com/account) · [API Docs](https://api.subdownload.com/docs) · [Pricing](https://subdownload.com/#pricing) · [Full Documentation](https://api.subdownload.com/docs/llms-full.txt)

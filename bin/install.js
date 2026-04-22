@@ -1,42 +1,86 @@
 /**
- * Install skill files + optional browser auth + MCP configuration.
+ * Install the SubDownload skill into every supported agent's skill dir,
+ * then optionally run browser auth to configure MCP.
+ *
+ * Flags:
+ *   --project              install to current project instead of user scope
+ *   --skip-auth            skip browser sign-in
+ *   --client <id>          restrict to one client (repeatable)
+ *   --all-clients          install to every known client, not just detected
  */
 
 const fs = require('fs');
 const path = require('path');
-const os = require('os');
+const { CLIENTS, getClient, detectInstalled } = require('./clients');
 
 const SRC = path.join(__dirname, '..', 'subdownload');
 
-const projectMode = process.argv.includes('--project');
-const skipAuth = process.argv.includes('--skip-auth');
-const baseDir = projectMode ? process.cwd() : os.homedir();
-const destDir = path.join(baseDir, '.claude', 'skills');
-const dest = path.join(destDir, 'subdownload');
+function parseArgs(argv) {
+  const out = { project: false, skipAuth: false, allClients: false, clients: [] };
+  for (let i = 0; i < argv.length; i++) {
+    const a = argv[i];
+    if (a === '--project') out.project = true;
+    else if (a === '--skip-auth') out.skipAuth = true;
+    else if (a === '--all-clients') out.allClients = true;
+    else if (a === '--client') out.clients.push(argv[++i]);
+    else if (a.startsWith('--client=')) out.clients.push(a.slice(9));
+  }
+  return out;
+}
 
 module.exports = function install() {
-  // ── Step 1: Install skill files ──────────────────────────────────
-  try {
-    fs.mkdirSync(destDir, { recursive: true });
-    // Remove existing symlink or directory before copying
-    try {
-      const stat = fs.lstatSync(dest);
-      if (stat.isSymbolicLink()) {
-        fs.unlinkSync(dest);
+  const opts = parseArgs(process.argv.slice(2));
+
+  // ── Resolve target clients ───────────────────────────────────────
+  let targets;
+  if (opts.clients.length) {
+    targets = opts.clients.map(id => {
+      const c = getClient(id);
+      if (!c) {
+        console.error(`\n✗ Unknown client: ${id}`);
+        console.error(`  Known: ${CLIENTS.map(c => c.id).join(', ')}\n`);
+        process.exit(1);
       }
-    } catch (_) {}
-    fs.cpSync(SRC, dest, { recursive: true, force: true });
-  } catch (err) {
-    console.error(`\n\u2717 Failed to install skill: ${err.message}\n`);
+      return c;
+    });
+  } else if (opts.allClients) {
+    targets = CLIENTS;
+  } else {
+    const detected = detectInstalled();
+    targets = detected.length ? detected : [getClient('claude-code')];
+  }
+
+  // ── Install skill files ──────────────────────────────────────────
+  const installed = [];
+  for (const client of targets) {
+    const dir = opts.project ? client.skillDir.project : client.skillDir.global;
+    const dest = path.join(dir, 'subdownload');
+    try {
+      fs.mkdirSync(dir, { recursive: true });
+      try {
+        const stat = fs.lstatSync(dest);
+        if (stat.isSymbolicLink()) fs.unlinkSync(dest);
+      } catch (_) {}
+      fs.cpSync(SRC, dest, { recursive: true, force: true });
+      installed.push({ client, dest });
+    } catch (err) {
+      console.error(`  ✗ ${client.name}: ${err.message}`);
+    }
+  }
+
+  if (!installed.length) {
+    console.error('\n✗ Failed to install skill to any client.\n');
     process.exit(1);
   }
 
-  const scope = projectMode ? 'this project' : 'your user account';
-  console.log(`\n\u2713 SubDownload skill installed for ${scope}`);
-  console.log(`  \u2192 ${dest}`);
+  const scope = opts.project ? 'this project' : 'your user account';
+  console.log(`\n✓ SubDownload skill installed for ${scope}:`);
+  for (const { client, dest } of installed) {
+    console.log(`  → ${client.name}: ${dest}`);
+  }
 
-  // ── Step 2: Auth ─────────────────────────────────────────────────
-  if (skipAuth) {
+  // ── Auth ─────────────────────────────────────────────────────────
+  if (opts.skipAuth) {
     printManualSetup();
     return;
   }
