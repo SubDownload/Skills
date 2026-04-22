@@ -6,7 +6,9 @@
  */
 
 const http = require('http');
+const https = require('https');
 const crypto = require('crypto');
+const os = require('os');
 const path = require('path');
 const fs = require('fs');
 const readline = require('readline');
@@ -19,17 +21,69 @@ const API_HOST = 'https://api.subdownload.com';
 const VERSION = pkg.version;
 
 function parseArgs(argv) {
-  const out = { allClients: false, clients: [] };
+  const out = { allClients: false, clients: [], force: false };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--all-clients') out.allClients = true;
+    else if (a === '--force' || a === '-f') out.force = true;
     else if (a === '--client') out.clients.push(argv[++i]);
     else if (a.startsWith('--client=')) out.clients.push(a.slice(9));
   }
   return out;
 }
 
-module.exports = function login() {
+// Read cached token from ~/.subdownload/config.json. Returns null if absent or unreadable.
+function readCachedToken() {
+  try {
+    const cfg = JSON.parse(fs.readFileSync(path.join(os.homedir(), '.subdownload', 'config.json'), 'utf8'));
+    return cfg && cfg.apiKey ? cfg.apiKey : null;
+  } catch (_) { return null; }
+}
+
+// Verify token by hitting GET /v1/verify. Resolves true if HTTP 200.
+function verifyToken(apiKey) {
+  return new Promise((resolve) => {
+    const u = new URL(API_HOST + '/v1/verify');
+    const req = https.request({
+      method: 'GET',
+      hostname: u.hostname,
+      port: u.port || 443,
+      path: u.pathname,
+      headers: { 'Authorization': `Bearer ${apiKey}` },
+      timeout: 8000,
+    }, (res) => {
+      res.resume();
+      resolve(res.statusCode === 200);
+    });
+    req.on('error', () => resolve(false));
+    req.on('timeout', () => { req.destroy(); resolve(false); });
+    req.end();
+  });
+}
+
+// Try to skip the browser flow by reusing a valid cached token. Returns true
+// if the cached token worked and configureMCP was called.
+async function tryReuseCachedToken(targets, force) {
+  if (force) return false;
+  const apiKey = readCachedToken();
+  if (!apiKey) return false;
+  process.stdout.write('Checking saved SubDownload credentials... ');
+  const valid = await verifyToken(apiKey);
+  if (!valid) {
+    console.log('expired, re-authenticating.');
+    return false;
+  }
+  console.log('valid.');
+  configureMCP(apiKey, targets);
+  return true;
+}
+
+async function authenticate(targets, force) {
+  if (await tryReuseCachedToken(targets, force)) return;
+  startAuth(targets);
+}
+
+module.exports = async function login() {
   const opts = parseArgs(process.argv.slice(2));
 
   // Explicit client selection short-circuits detection
@@ -43,12 +97,12 @@ module.exports = function login() {
       }
       return c;
     });
-    startAuth(targets);
+    await authenticate(targets, opts.force);
     return;
   }
 
   if (opts.allClients) {
-    startAuth(CLIENTS);
+    await authenticate(CLIENTS, opts.force);
     return;
   }
 
@@ -56,13 +110,13 @@ module.exports = function login() {
 
   if (!process.stdin.isTTY || detected.length === 1) {
     const targets = detected.length ? detected : [getClient('claude-code')];
-    startAuth(targets);
+    await authenticate(targets, opts.force);
     return;
   }
 
   if (detected.length === 0) {
     console.log('\nNo supported clients detected. Configuring for Claude Code by default.');
-    startAuth([getClient('claude-code')]);
+    await authenticate([getClient('claude-code')], opts.force);
     return;
   }
 
@@ -71,18 +125,18 @@ module.exports = function login() {
   console.log(`  a) All of the above`);
 
   const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
-  rl.question('\nConfigure MCP for which client? [a] ', (answer) => {
+  rl.question('\nConfigure MCP for which client? [a] ', async (answer) => {
     rl.close();
     answer = answer.trim().toLowerCase() || 'a';
     if (answer === 'a') {
-      startAuth(detected);
+      await authenticate(detected, opts.force);
     } else {
       const idx = parseInt(answer, 10) - 1;
       if (idx >= 0 && idx < detected.length) {
-        startAuth([detected[idx]]);
+        await authenticate([detected[idx]], opts.force);
       } else {
         console.log('Invalid choice, configuring all.');
-        startAuth(detected);
+        await authenticate(detected, opts.force);
       }
     }
   });
