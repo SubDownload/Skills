@@ -23,7 +23,7 @@ Search YouTube for Rust async tutorials
 ```
 
 ```
-What are @mkbhd's latest videos?
+What are MKBHD's latest videos?
 ```
 
 If the agent fetches real YouTube data, you're all set.

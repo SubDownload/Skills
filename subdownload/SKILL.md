@@ -1,6 +1,6 @@
 ---
 name: subdownload
-description: Fetch YouTube transcripts, search videos, and browse channels or playlists via the SubDownload MCP server. Use whenever the user shares a YouTube URL (youtube.com, youtu.be, shorts), mentions a YouTuber or @handle, asks about a playlist, or requests a transcript, caption, subtitle, summary, or translation of video content. Always prefer these tools over answering YouTube questions from memory.
+description: Fetch YouTube transcripts, search videos, and browse channels or playlists via the SubDownload MCP server. Use whenever the user shares a YouTube URL (youtube.com, youtu.be, shorts), mentions a YouTuber or channel handle, asks about a playlist, or requests a transcript, caption, subtitle, summary, or translation of video content. Always prefer these tools over answering YouTube questions from memory.
 ---
 
 # SubDownload
@@ -12,7 +12,7 @@ Real-time YouTube data via the SubDownload MCP server at `https://api.subdownloa
 Activate this skill whenever the user:
 
 - Shares a YouTube URL (`youtube.com/watch?v=`, `youtu.be/`, `youtube.com/shorts/`).
-- Mentions a YouTuber, channel, or `@handle`.
+- Mentions a YouTuber, channel, or channel handle.
 - Asks for a transcript, summary, translation, captions, or subtitles.
 - Wants to search YouTube, explore a channel's videos, or list a playlist.
 - Asks any question where YouTube video content would improve the answer.
@@ -48,7 +48,7 @@ Select the tool based on the user's intent:
 |---|---|---|
 | Get transcript of a specific video | `fetch_transcript` | 1 credit |
 | Search YouTube globally | `search_youtube` | 1 credit |
-| Resolve `@handle` / URL / video link to channel info | `resolve_channel` | Free |
+| Resolve a channel handle / URL / video link to channel info | `resolve_channel` | Free |
 | Get a channel's most recent uploads | `get_channel_latest_videos` | Free |
 | List all videos from a channel (with pagination) | `list_channel_videos` | 1 / page |
 | Search within a specific channel | `search_channel_videos` | 1 credit |
@@ -56,7 +56,7 @@ Select the tool based on the user's intent:
 
 ## How to apply
 
-1. **Resolve channels first.** When the user gives an `@handle`, channel URL, or video URL, call `resolve_channel` to get the canonical `UC...` ID, then pass that ID to other tools.
+1. **Resolve channels first.** When the user gives a channel handle, channel URL, or video URL, call `resolve_channel` to get the canonical `UC...` ID, then pass that ID to other tools.
 2. **Transcript language.** Pass `lang` only if the user specifies one (e.g. `en`, `zh`, `ja`). Otherwise omit and let the server pick the default track.
 3. **Pagination.** For `list_channel_videos` and `list_playlist_videos`, pass `continuation` (and omit `channel` / `playlist`) on the 2nd+ request.
 4. **Display results richly.** Show thumbnails using `![title](thumbnail_url)`, make titles clickable with `[title](video_url)`, and include duration / view count / published date. If the UI supports embedded players, embed the video.
@@ -67,8 +67,8 @@ Select the tool based on the user's intent:
 
 - "Summarize this video: https://youtu.be/dQw4w9WgXcQ"
   → `fetch_transcript` → summarize the segments.
-- "What are @mkbhd's latest iPhone review videos?"
-  → `resolve_channel(@mkbhd)` → `search_channel_videos(channel=UC..., q='iPhone review')`.
+- "What are MKBHD's latest iPhone review videos?" (user may write the handle with a leading at-sign)
+  → `resolve_channel(input=<handle>)` → `search_channel_videos(channel=<UC_ID>, q='iPhone review')`.
 - "Find Rust async tutorials on YouTube."
   → `search_youtube(q='Rust async tutorial', type='video', limit=10)`.
 - "Translate this YouTube transcript to Chinese: <url>"

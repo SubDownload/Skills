@@ -189,7 +189,7 @@ function configureMCP(apiKey, targets) {
   if (configured.length) {
     console.log(`\nYou're all set! Restart your client and try:`);
     console.log('  "Summarize https://youtu.be/dQw4w9WgXcQ"');
-    console.log('  "Latest videos from @mkbhd"\n');
+    console.log('  "Latest videos from MKBHD"\n');
   }
 }
 
@@ -207,6 +207,17 @@ function buildServerEntry(apiKey, client, format) {
 }
 
 function writeMCPConfig(apiKey, client) {
+  // Claude Code: route through a local stdio proxy that adds the Authorization
+  // header on every HTTP call. The HTTP transport in Claude Code 2.x silently
+  // drops custom headers (anthropics/claude-code#14977), so Bearer configured
+  // in .mcp.json never reaches the server. stdio transport does not have this
+  // bug — the proxy runs inside Claude Code, forwards JSON-RPC to our HTTPS
+  // endpoint with Bearer baked in, and streams responses back.
+  if (client.id === 'claude-code') {
+    writeClaudeCodeStdioProxy(apiKey, client);
+    return;
+  }
+
   const { path: configPath, format } = client.mcp;
   const dir = path.dirname(configPath);
   fs.mkdirSync(dir, { recursive: true });
@@ -218,6 +229,62 @@ function writeMCPConfig(apiKey, client) {
   fs.writeFileSync(configPath, JSON.stringify(config, null, 2) + '\n');
 
   console.log(`  ✓ ${client.name} → ${configPath}`);
+}
+
+// Claude Code stdio proxy installation.
+//   1. Write token to ~/.subdownload/config.json (mode 0600)
+//   2. Copy bin/proxy.js to ~/.subdownload/proxy.js
+//   3. Clear any stale HTTP MCP registration across all scopes
+//   4. Register stdio MCP: `claude mcp add subdownload -- node ~/.subdownload/proxy.js`
+function writeClaudeCodeStdioProxy(apiKey, client) {
+  const home = require('os').homedir();
+  const stateDir = path.join(home, '.subdownload');
+  fs.mkdirSync(stateDir, { recursive: true, mode: 0o700 });
+
+  // 1. Token goes in a private config file the proxy reads at startup.
+  const configPath = path.join(stateDir, 'config.json');
+  fs.writeFileSync(configPath, JSON.stringify({
+    apiKey,
+    apiHost: API_HOST,
+    client: client.id,
+    version: VERSION,
+  }, null, 2));
+  try { fs.chmodSync(configPath, 0o600); } catch (_) {}
+
+  // 2. Copy the proxy script next to the config so it survives npm cache eviction.
+  const proxySrc = path.join(__dirname, 'proxy.js');
+  const proxyDst = path.join(stateDir, 'proxy.js');
+  fs.copyFileSync(proxySrc, proxyDst);
+  try { fs.chmodSync(proxyDst, 0o755); } catch (_) {}
+
+  // 3. Purge any prior registration in any scope (old HTTP-transport entries, etc.)
+  for (const scope of ['local', 'user', 'project']) {
+    try {
+      execSync(`claude mcp remove subdownload -s ${scope}`, { stdio: 'ignore' });
+    } catch (_) { /* not registered in this scope — fine */ }
+  }
+
+  // 4. Register stdio MCP pointing at the proxy.
+  try {
+    execSync(`claude mcp add --scope user subdownload -- node "${proxyDst}"`, {
+      stdio: 'ignore',
+    });
+    console.log(`  ✓ ${client.name} → stdio proxy (token in ${configPath})`);
+  } catch (err) {
+    // Fallback: direct JSON write if the claude CLI isn't on PATH.
+    const mcpJsonPath = client.mcp.path;
+    const dir = path.dirname(mcpJsonPath);
+    fs.mkdirSync(dir, { recursive: true });
+    let mcpConfig = {};
+    try { mcpConfig = JSON.parse(fs.readFileSync(mcpJsonPath, 'utf8')); } catch (_) {}
+    if (!mcpConfig.mcpServers) mcpConfig.mcpServers = {};
+    mcpConfig.mcpServers.subdownload = {
+      command: 'node',
+      args: [proxyDst],
+    };
+    fs.writeFileSync(mcpJsonPath, JSON.stringify(mcpConfig, null, 2) + '\n');
+    console.log(`  ✓ ${client.name} → ${mcpJsonPath} (stdio proxy, fallback write)`);
+  }
 }
 
 function openBrowser(url) {
