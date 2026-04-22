@@ -1,6 +1,6 @@
 {
   "name": "@subdown/skill",
-  "version": "1.4.2",
+  "version": "1.5.0",
   "description": "Agent Skill for YouTube transcripts, search, and channel browsing via the SubDownload MCP server. Works with Claude Code, Cursor, Codex, Windsurf, Gemini CLI, OpenCode, and more.",
   "bin": {
     "skill": "bin/cli.js",

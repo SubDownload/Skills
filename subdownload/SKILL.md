@@ -53,20 +53,35 @@ Select the tool based on the user's intent:
 | List all videos from a channel (with pagination) | `list_channel_videos` | 1 / page |
 | Search within a specific channel | `search_channel_videos` | 1 credit |
 | List videos in a playlist (with pagination) | `list_playlist_videos` | 1 / page |
+| Transcribe a video with no captions (AI Whisper, async) | `transcribe_video` | 5 credits on done |
+| Poll an ASR task | `get_asr_task` | Free |
+| List the user's saved Library items | `list_library` | Free |
+| Read a saved Library item (transcript + summary inline) | `get_library_item` | Free |
+| Save a video / upload a summary to the Library | `save_to_library` | 1 quota unit |
 
 ## How to apply
 
 1. **Resolve channels first.** When the user gives a channel handle, channel URL, or video URL, call `resolve_channel` to get the canonical `UC...` ID, then pass that ID to other tools.
 2. **Transcript language.** Pass `lang` only if the user specifies one (e.g. `en`, `zh`, `ja`). Otherwise omit and let the server pick the default track.
-3. **Pagination.** For `list_channel_videos` and `list_playlist_videos`, pass `continuation` (and omit `channel` / `playlist`) on the 2nd+ request.
-4. **Display results richly.** Show thumbnails using `![title](thumbnail_url)`, make titles clickable with `[title](video_url)`, and include duration / view count / published date. If the UI supports embedded players, embed the video.
-5. **Credits.** Only HTTP 200 responses consume credits — errors cost nothing, so retry bad parameters without fear. HTTP 402 means the user is out of credits; direct them to https://subdownload.com/account?utm_source=gthb_skills_xa2ykb&utm_medium=code&utm_campaign=Skills.
-6. **Rate limit.** 200 requests/minute per key. On HTTP 429, back off briefly and retry.
+3. **One-shot bookmark.** If the user wants the transcript AND a record in their Library, pass `save=true` to `fetch_transcript` — the server bookmarks the video in the same call (flags `has_asr` when the result came from ASR fallback). Saves a follow-up `save_to_library`. Does not persist a summary — use `save_to_library` for that.
+4. **No-caption videos → ASR.** If `fetch_transcript` returns `NO_CAPTIONS`, or the user explicitly wants AI transcription, call `transcribe_video`. It's async: wait `next_poll_after_seconds`, then poll `get_asr_task` with the returned `task_id` until status is `done`.
+5. **Saving transcript + summary in one call.** After you've generated an AI summary for a video you just transcribed, call `save_to_library` with `kind='both'` — it flips `has_asr` AND uploads the summary text in one round-trip (still one quota unit). Use `kind='asr'` for transcript-only, `kind='summary'` for summary-only.
+6. **Pagination.** For `list_channel_videos` and `list_playlist_videos`, pass `continuation` (and omit `channel` / `playlist`) on the 2nd+ request.
+7. **Display results richly.** Show thumbnails using `![title](thumbnail_url)`, make titles clickable with `[title](video_url)`, and include duration / view count / published date. If the UI supports embedded players, embed the video.
+8. **Credits.** Only HTTP 200 responses consume credits — errors cost nothing, so retry bad parameters without fear. HTTP 402 means the user is out of credits; direct them to https://subdownload.com/account?utm_source=gthb_skills_xa2ykb&utm_medium=code&utm_campaign=Skills.
+9. **Rate limit.** 200 requests/minute per key. On HTTP 429, back off briefly and retry.
 
 ## Examples
 
+- "Summarize this video and save it for me: https://youtu.be/dQw4w9WgXcQ"
+  → `fetch_transcript(video_id=<id>, save=true)` → summarize the segments →
+  `save_to_library(video_id=<id>, kind='both', text=<summary>, title=..., thumbnail=...)` to persist the summary in one call.
 - "Summarize this video: https://youtu.be/dQw4w9WgXcQ"
   → `fetch_transcript` → summarize the segments.
+- "Transcribe this — it has no captions."
+  → `transcribe_video(video_url=<url>)` → wait `next_poll_after_seconds` → `get_asr_task(task_id=...)` until status `done`.
+- "What have I saved about Rust?"
+  → `list_library(q='rust')` → `get_library_item(id=<hit_id>)` to read the saved transcript/summary.
 - "What are MKBHD's latest iPhone review videos?" (user may write the handle with a leading at-sign)
   → `resolve_channel(input=<handle>)` → `search_channel_videos(channel=<UC_ID>, q='iPhone review')`.
 - "Find Rust async tutorials on YouTube."
